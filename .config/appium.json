@@ -1,0 +1,14 @@
+{
+  "hostname": "127.0.0.1",
+  "path": "/",
+  "port": 4723,
+  "logLevel": "error",
+  "timeout": 10,
+  "headless": false,
+  "usePreinstalledWDA": true,
+  "videoPath": "./reports",
+  "devicefarm-hostname": {
+    "local": "127.0.0.1"
+  }
+}
+

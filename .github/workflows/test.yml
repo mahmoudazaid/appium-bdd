@@ -1,0 +1,129 @@
+name: Mobile Test Automation
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Platform to test (android/ios)'
+        required: true
+        default: 'android'
+        type: choice
+        options:
+          - android
+          - ios
+
+jobs:
+  test-android:
+    name: Test Android
+    runs-on: macos-latest
+    if: github.event.inputs.platform != 'ios' && (github.event_name != 'workflow_dispatch' || github.event.inputs.platform == 'android')
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+
+      - name: Create Android Emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          arch: x86_64
+          profile: Nexus 6
+          script: |
+            npm install -g appium
+            appium --address 127.0.0.1 --port 4723 --log-level error &
+            sleep 10
+            PLATFORM=android npm test
+
+      - name: Generate HTML Report
+        if: always()
+        run: npm run test:report
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-test-results
+          path: |
+            reports/
+            artifacts/
+          retention-days: 7
+
+  test-matrix:
+    name: Test Matrix
+    runs-on: ${{ matrix.os }}
+    if: github.event_name == 'workflow_dispatch'
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest]
+        platform: [android, ios]
+        exclude:
+          - os: macos-latest
+            platform: android
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Appium
+        run: npm install -g appium
+
+      - name: Setup for ${{ matrix.platform }}
+        if: matrix.platform == 'android'
+        uses: android-actions/setup-android@v2
+
+      - name: Start Appium Server
+        run: |
+          appium --address 127.0.0.1 --port 4723 --log-level error &
+          sleep 10
+
+      - name: Run Tests for ${{ matrix.platform }}
+        env:
+          PLATFORM: ${{ matrix.platform }}
+        run: npm test
+
+      - name: Generate HTML Report
+        if: always()
+        run: npm run test:report
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.platform }}-test-results
+          path: |
+            reports/
+            artifacts/
+          retention-days: 7

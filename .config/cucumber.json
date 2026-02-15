@@ -1,0 +1,10 @@
+{
+  "env": "test",
+  "stack": "",
+  "screenshots": "onfail",
+  "video": false,
+  "videoPath": "./reports",
+  "timeout": 900,
+  "apitimeout": 180,
+  "version": "1.0.0"
+}
