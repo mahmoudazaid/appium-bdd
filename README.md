@@ -111,6 +111,11 @@ appium server --use-plugins=device-farm --plugin-device-farm-platform=android
 
 **Note:** The device-farm plugin works for both Android and iOS. For iOS-only testing, you can also use:
 
+```bash
+# Make sure ANDROID_HOME or ANDROID_SDK_ROOT is set first!
+appium server --use-plugins=device-farm --plugin-device-farm-platform=ios
+```
+
 **Check Available Devices:**
 
 Once Appium server is running, you can view available devices in your browser:
