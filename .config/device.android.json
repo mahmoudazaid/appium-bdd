@@ -1,0 +1,7 @@
+{
+  "platform": "Android",
+  "platformVersion": "16.0",
+  "deviceName": "Pixel_9",
+  "automationName": "UiAutomator2",
+  "app": "/Users/mahmoud/development/appium-bdd/apps/android/mda-2.2.0-25.apk"
+}

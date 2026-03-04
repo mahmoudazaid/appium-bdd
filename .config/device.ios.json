@@ -1,0 +1,7 @@
+{
+  "platform": "iOS",
+  "platformVersion": "18.6",
+  "deviceName": "iPhone 16 Pro",
+  "automationName": "XCUITest",
+  "app": "/Users/mahmoud/development/appium-bdd/apps/ios/mda-2.12.0.app"
+}
